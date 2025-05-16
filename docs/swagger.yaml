@@ -1,0 +1,189 @@
+basePath: /api/v1
+definitions:
+  request.SendMessageRequest:
+    properties:
+      content:
+        maxLength: 160
+        type: string
+      to:
+        type: string
+    required:
+    - content
+    - to
+    type: object
+  response.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  response.MessageItem:
+    properties:
+      content:
+        type: string
+      id:
+        type: string
+      message_id:
+        type: string
+      sent_at:
+        type: string
+      status:
+        type: string
+      to:
+        type: string
+    type: object
+  response.MessageListResponse:
+    properties:
+      messages:
+        items:
+          $ref: '#/definitions/response.MessageItem'
+        type: array
+      page:
+        type: integer
+      page_size:
+        type: integer
+      total:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
+  response.MessageResponse:
+    properties:
+      message:
+        type: string
+      messageId:
+        type: string
+    type: object
+  response.SuccessResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  response.ValidationErrorResponse:
+    properties:
+      details:
+        additionalProperties:
+          type: string
+        type: object
+      error:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: This is a message sending service API
+  title: Message API
+  version: "1.0"
+paths:
+  /messages:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of messages with optional filtering
+      parameters:
+      - description: Message status (pending/sent/failed)
+        in: query
+        name: status
+        type: string
+      - description: Start date (YYYY-MM-DD)
+        in: query
+        name: start_date
+        type: string
+      - description: End date (YYYY-MM-DD)
+        in: query
+        name: end_date
+        type: string
+      - default: 1
+        description: Page number
+        in: query
+        minimum: 1
+        name: page
+        type: integer
+      - default: 10
+        description: Page size
+        in: query
+        maximum: 100
+        minimum: 1
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.MessageListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ValidationErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      tags:
+      - messages
+    post:
+      consumes:
+      - application/json
+      description: Create a new message to be sent
+      parameters:
+      - description: Message details
+        in: body
+        name: message
+        required: true
+        schema:
+          $ref: '#/definitions/request.SendMessageRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.MessageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ValidationErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      tags:
+      - messages
+  /messages/start:
+    post:
+      consumes:
+      - application/json
+      description: Start the automatic message sending process
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      tags:
+      - messages
+  /messages/stop:
+    post:
+      consumes:
+      - application/json
+      description: Stop the automatic message sending process
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      tags:
+      - messages
+swagger: "2.0"

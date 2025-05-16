@@ -1,0 +1,18 @@
+server:
+  port: 8080
+  host: "0.0.0.0"
+
+database:
+  host: localhost
+  port: 5432
+  user: postgres
+  password: postgres
+  name: auto_message_sender_test
+  ssl_mode: disable
+
+redis:
+  host: localhost
+  port: 6379
+
+webhook:
+  url: "https://auto-message-sender-api.free.beeceptor.com"
